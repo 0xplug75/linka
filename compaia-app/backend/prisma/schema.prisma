@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Senior {
+  id        String     @id @default(cuid())
+  nom       String
+  tel       String
+  adresse   String
+  checkIns  CheckIn[]
+  alerts    Alert[]
+  createdAt DateTime   @default(now())
+}
+
+model CheckIn {
+  id            String   @id @default(cuid())
+  seniorId      String
+  senior        Senior   @relation(fields: [seniorId], references: [id])
+  date          DateTime @default(now())
+  scoreHumeur   Int      // 1-10
+  transcript    String
+  resumeIa      String
+  statusCouleur String   // Green | Orange | Red
+  alerts        Alert[]
+}
+
+model Alert {
+  id         String   @id @default(cuid())
+  seniorId   String
+  senior     Senior   @relation(fields: [seniorId], references: [id])
+  checkInId  String
+  checkIn    CheckIn  @relation(fields: [checkInId], references: [id])
+  type       String
+  estResolu  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
